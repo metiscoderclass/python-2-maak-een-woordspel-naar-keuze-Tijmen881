@@ -1,0 +1,78 @@
+from faker import Faker
+fake = Faker()
+print("Welcome to Wordmind! Guess the secret word. If you guess the correct letter in the correct place, it will be unraveled. Keep going until you have guessed the word!")
+SWord = fake.word() #the secret word
+length = len(SWord)
+dashes = "-"*length #the hidden word, which reveals more of the secret word with every correctly guessed letter
+done = dashes
+win = False
+
+keren = 0
+game = True # the variable which determines if the game continues
+guessed = {}
+# ^ most of the variables and the intro
+
+#showing the player the (partially) hidden word and letting them guess
+while game:
+  print("The secret word:", dashes)
+  guess = input("Guess the word: ")
+  print("")
+  keren = keren + 1 #the variable which tells you how many times you've guessed
+  dashes = list(dashes) #turning dashes into a list for easy altering
+  for i in range(len(dashes)):
+    if dashes[i] == "?":
+      dashes[i] = "-"
+
+  #for every letter in the guess, it checks if it's somewhere in the secret word. if so, it marks the appropriate spot with a questionmark
+  for i in range(len(SWord)):
+    for f in range(len(guess)):
+      if guess[f] == SWord[i]:
+        if f < len(dashes):
+          if dashes[f] == "-": 
+           dashes[f] = "?"
+
+  #iterating throught the hidden word and seeing what they got right then filling in what they correctly guessed
+  for i in range(min(len(SWord), len(guess))):
+    if SWord[i] == guess[i].lower():
+      dashes[i] = SWord[i]
+      guessed[SWord[i]] = 1
+      
+  #the win/lose condition
+  dashes = "".join(dashes)
+  if dashes == SWord:
+    game = False
+    print("The secret word:", SWord)
+    again = input(f"You guessed it in {keren} attempts. Wanna go again (Y/N)? ")
+    if again.lower() == "y":
+      SWord = fake.word()
+      length = len(SWord)
+      dashes = "-"*length
+      keren = 0
+      print("")
+      game = True
+    else:
+      print("Until next time!")
+      break
+    
+  if keren == 5 and win != True:
+    win = False
+    game = False
+    print("The secret word was:", SWord)
+    
+
+  if keren == 5:
+    again = input(f"Sadly, you didn't guess it correctly. You tried {keren} times. Wanna try again (Y/N)? ")
+    if again.lower() == "y":
+      SWord = fake.word()
+      length = len(SWord)
+      dashes = "-"*length
+      win = False
+      keren = 0
+      print("")
+      game = True
+    else:
+      print("Until next time!")
+      break
+if keren == 5 and win != True:
+  win = False
+  game = False
